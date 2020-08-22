@@ -58,7 +58,7 @@ jobs:
           echo 'export PATH=~/.local/bin:"$PATH"' >> ~/.bashrc
           source ~/.bashrc
           echo $PATH
-          ~/.local/bin/west version
+          ~/.local/bin/west --version
           
       # From https://github.com/lupyuen/pinetime-hypnos/blob/master/README.md
       - name: Build Zephyr firmware
