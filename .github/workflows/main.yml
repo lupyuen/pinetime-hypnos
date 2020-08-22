@@ -57,19 +57,20 @@ jobs:
           pip3 install --user -U west
           echo 'export PATH=~/.local/bin:"$PATH"' >> ~/.bashrc
           source ~/.bashrc
-          west version
+          echo $PATH
+          ~/.local/bin/west version
           
       # From https://github.com/lupyuen/pinetime-hypnos/blob/master/README.md
       - name: Build Zephyr firmware
         run:  |          
           source ~/.bashrc
-          west init -l app/
-          west update
+          ~/.local/bin/west init -l app/
+          ~/.local/bin/west update
           export LOGGING="off"
-          cd app/
-          west build -p -b ${{ matrix.device }} hypnos
+          pushd app/
+          ~/.local/bin/west build -p -b ${{ matrix.device }} hypnos
           pwd ; ls -l
-          cd ..
+          popd
           pwd ; ls -l
 
 # Previous steps for Docker Build
