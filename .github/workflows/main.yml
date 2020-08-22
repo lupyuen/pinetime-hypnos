@@ -91,10 +91,16 @@ jobs:
           source ~/.bashrc
           export LOGGING="off"
           pushd app/
-          ~/.local/bin/west build -p -b ${{ matrix.device }} hypnos
+          # ~/.local/bin/west build -p -b ${{ matrix.device }} hypnos
           pwd ; ls -l
           popd
           pwd ; ls -l
+          
+      - name: Upload all files
+        uses: actions/upload-artifact@v2
+        with:
+          name: hypnos
+          path: .
 
 # Previous steps for Docker Build
 #      - name: West Init
