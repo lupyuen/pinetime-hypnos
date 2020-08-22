@@ -69,7 +69,7 @@ jobs:
           pwd ; ls -l
           cd ..
           pwd ; ls -l
-            
+
 #      - name: West Init
 #        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
 #        id: west-init
