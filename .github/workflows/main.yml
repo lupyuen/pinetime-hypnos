@@ -47,7 +47,7 @@ jobs:
             ${{ runner.os }}-
 
       # From https://docs.zephyrproject.org/latest/getting_started/index.html      
-      - name: Install depedencies
+      - name: Install Zephyr depedencies
         run:  |
           sudo apt install --no-install-recommends git cmake ninja-build gperf \
             ccache dfu-util device-tree-compiler wget \
@@ -57,10 +57,12 @@ jobs:
           pip3 install --user -U west
           echo 'export PATH=~/.local/bin:"$PATH"' >> ~/.bashrc
           source ~/.bashrc
+          west version
           
       # From https://github.com/lupyuen/pinetime-hypnos/blob/master/README.md
-      - name: Build firmware
-        run:  |
+      - name: Build Zephyr firmware
+        run:  |          
+          source ~/.bashrc
           west init -l app/
           west update
           export LOGGING="off"
@@ -70,6 +72,7 @@ jobs:
           cd ..
           pwd ; ls -l
 
+# Previous steps for Docker Build
 #      - name: West Init
 #        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
 #        id: west-init
