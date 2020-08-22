@@ -66,9 +66,20 @@ jobs:
           source ~/.bashrc
           ~/.local/bin/west init -l app/
           ~/.local/bin/west update
-          
+
+      - name: Check cache for Zephyr toolchain
+        id:   cache-toolchain
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-toolchain
+        with:
+          path: ~/zephyr-sdk-0.11.3
+          key:  ${{ runner.os }}-build-${{ env.cache-name }}
+          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+
       # From https://docs.zephyrproject.org/latest/getting_started/index.html      
       - name: Install Zephyr toolchain
+        if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
         run:  |          
           wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.11.3/zephyr-sdk-0.11.3-setup.run
           chmod +x zephyr-sdk-0.11.3-setup.run
@@ -80,7 +91,7 @@ jobs:
           source ~/.bashrc
           export LOGGING="off"
           pushd app/
-          ~/.local/bin/west build -p -b ${{ matrix.device }} hypnos
+          # ~/.local/bin/west build -p -b ${{ matrix.device }} hypnos
           pwd ; ls -l
           popd
           pwd ; ls -l
