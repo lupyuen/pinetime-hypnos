@@ -66,6 +66,7 @@ jobs:
           source ~/.bashrc
           ~/.local/bin/west init -l app/
           ~/.local/bin/west update
+          ~/.local/bin/west config --global zephyr.base-prefer configfile
 
       - name: Check cache for Zephyr toolchain
         id:   cache-toolchain
@@ -90,10 +91,7 @@ jobs:
         run:  |          
           source ~/.bashrc
           export LOGGING="off"
-          pushd app/
-          # ~/.local/bin/west build -p -b ${{ matrix.device }} hypnos
-          pwd ; ls -l
-          popd
+          ~/.local/bin/west build -p -b ${{ matrix.device }} app/hypnos
           pwd ; ls -l
           
       - name: Upload all files
