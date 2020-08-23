@@ -21,7 +21,8 @@ jobs:
   build:
     strategy:
       matrix:
-        device: [pinetime, p8]
+        device: [pinetime]
+#       device: [pinetime, p8]
     runs-on: ubuntu-latest
     name: Build and upload
     steps:
@@ -44,40 +45,98 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-      - name: West Init
-        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
-        id: west-init
+
+      # From https://docs.zephyrproject.org/latest/getting_started/index.html      
+      - name: Install Zephyr dependencies
+        run:  |
+          sudo apt install --no-install-recommends git cmake ninja-build gperf \
+            ccache dfu-util device-tree-compiler wget \
+            python3-dev python3-pip python3-setuptools python3-tk python3-wheel xz-utils file \
+            make gcc gcc-multilib g++-multilib libsdl2-dev
+          cmake --version
+          pip3 install --user -U west
+          echo 'export PATH=~/.local/bin:"$PATH"' >> ~/.bashrc
+          source ~/.bashrc
+          echo $PATH
+          ~/.local/bin/west --version
+          
+      # From https://github.com/lupyuen/pinetime-hypnos/blob/master/README.md
+      - name: Get Zephyr source
+        run:  |          
+          source ~/.bashrc
+          ~/.local/bin/west init -l app/
+          ~/.local/bin/west update
+
+      - name: Check cache for Zephyr toolchain
+        id:   cache-toolchain
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-toolchain
         with:
-          args: 'init "-l app/'
-      - name: West Update
-        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
-        id: west-update
-        with:
-          args: 'update'
-      - name: West Config Zephyr Base
-        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
-        id: west-config
-        with:
-          args: 'config "--global zephyr.base-prefer configfile"'
-      - name: West Zephyr Export
-        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
-        id: west-zephyr-export
-        with:
-          args: 'zephyr-export'
-      - name: West Build ${{ matrix.device }}
-        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
-        id: west-build
-        with:
-          args: 'build "-p -b ${{ matrix.device }} app/hypnos"'
-      - name: Get short git hash
-        id: vars
-        shell: bash
-        run:
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-      # Upload firmware build
-      - name: Upload firmware build
+          path: ~/zephyr-sdk-0.11.3
+          key:  ${{ runner.os }}-build-${{ env.cache-name }}
+          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+
+      # From https://docs.zephyrproject.org/latest/getting_started/index.html      
+      - name: Install Zephyr toolchain
+        if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
+        run:  |          
+          wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.11.3/zephyr-sdk-0.11.3-setup.run
+          chmod +x zephyr-sdk-0.11.3-setup.run
+          ./zephyr-sdk-0.11.3-setup.run -- -d ~/zephyr-sdk-0.11.3
+
+      # From https://github.com/lupyuen/pinetime-hypnos/blob/master/README.md
+      - name: Build Zephyr firmware
+        run:  |          
+          source ~/.bashrc
+          export LOGGING="off"
+          pushd app/
+          # ~/.local/bin/west build -p -b ${{ matrix.device }} hypnos
+          pwd ; ls -l
+          popd
+          pwd ; ls -l
+          
+      - name: Upload all files
         uses: actions/upload-artifact@v2
         with:
+          name: hypnos
+          path: .
+
+# Previous steps for Docker Build
+#      - name: West Init
+#        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
+#        id: west-init
+#        with:
+#          args: 'init "-l app/'
+#      - name: West Update
+#        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
+#        id: west-update
+#        with:
+#          args: 'update'
+#      - name: West Config Zephyr Base
+#        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
+#        id: west-config
+#        with:
+#          args: 'config "--global zephyr.base-prefer configfile"'
+#      - name: West Zephyr Export
+#        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
+#        id: west-zephyr-export
+#        with:
+#          args: 'zephyr-export'
+#      - name: West Build ${{ matrix.device }}
+#        uses: 'docker://zmkfirmware/zephyr-west-action-arm:latest'
+#        id: west-build
+#        with:
+#          args: 'build "-p -b ${{ matrix.device }} app/hypnos"'
+#      - name: Get short git hash
+#        id: vars
+#        shell: bash
+#        run:
+#          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      # Upload firmware build
+#      - name: Upload firmware build
+#        uses: actions/upload-artifact@v2
+#        with:
           # Append git hash to file name
-          name: ${{ matrix.device }}-hypnos-fw-${{ steps.vars.outputs.sha_short }}
-          path: build/zephyr/zephyr.*
+#          name: ${{ matrix.device }}-hypnos-fw-${{ steps.vars.outputs.sha_short }}
+#          path: build/zephyr/zephyr.*
