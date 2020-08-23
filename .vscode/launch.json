@@ -51,8 +51,8 @@
                 //  "set $pc = Reset_Handler",  //  Prepare to jump to the Application's Reset Handler
                 //  "stepi",                    //  Execute the Reset Handler
                 //  "break z_sys_init_run_level",        //  Break at z_sys_init_run_level() in zephyr/kernel/device.c
-                "break bg_thread_main",                  //  Break at bg_thread_main() in zephyr/kernel/init.c
-                "break main",                            //  Break at main()
+                "break bg_thread_main",              //  Break at bg_thread_main() in zephyr/kernel/init.c
+                //  "break main",                        //  Break at main()
                 //  "break __assert_func",               //  Break for any C assert failures
                 //  "break os_default_irq",              //  Break for any Mynewt unhandled interrupts
                 //  "break core::panicking::panic",      //  Break for any Rust assert failures and panics
