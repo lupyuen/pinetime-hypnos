@@ -10,11 +10,9 @@
             //  OpenOCD path is defined in workspace.code-workspace.
             "servertype": "openocd",
             "cwd": "${workspaceRoot}",
-            //  Application Executable to be flashed before debugging.  Note that the Application ELF image does not contain a valid Image Header, so we must install the Stub Bootloader.
-            "executable": "/Users/Luppy/PineTime/pinetime-hypnos-fw-f61aaf1/zephyr.elf",
-            //  Uncomment one of these lines to debug MCUBoot or Stub Bootloader:
-            //  "executable": "bin/targets/nrf52_boot/app/boot/mynewt/mynewt.elf",
-            //  "executable": "bin/targets/nrf52_boot/app/apps/boot_stub/boot_stub.elf",
+            //  Application Executable to be flashed before debugging.  Note that the Application ELF image does not contain a valid Image Header,
+            //  so we must load the Stub Bootloader zephyr-vector.bin to 0x0 before debugging.
+            "executable": "../pinetime-hypnos-fw-f61aaf1/zephyr.elf",
             "device": "nRF52832",
             //  Arm System View Description, from apache-mynewt-core/hw/mcu/nordic/src/ext/nrfx/mdk
             "svdFile": "nrf52.svd",
@@ -26,6 +24,9 @@
                 "debug.ocd"
             ],
             "preLaunchCommands": [
+                //  Rewrite file paths from "/github/workspace/xxx" to "xxx"
+                "set substitute-path /github/workspace .",
+
                 //  Before loading the Application, run these gdb commands.
                 //  Set timeout for executing openocd commands.
                 "set remotetimeout 60",

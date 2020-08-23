@@ -1,5 +1,7 @@
 # Hypnos
 
+__(This fork of [`pinetime-hypnos`](https://github.com/endian-albin/pinetime-hypnos) supports VSCode Debugging. See [`.vscode/launch.json`](.vscode/launch.json))__
+
 This is a work-in-progress [Zephyr](https://www.zephyrproject.org/)-based firmware for the
 [PineTime](https://www.pine64.org/pinetime/) and P8 smartwatches. Contributions are welcome!
 
