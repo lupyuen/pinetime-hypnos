@@ -4,7 +4,7 @@
 			"path": "."
 		},
 		{
-			"path": "../hypnos-no-logging"
+			"path": "../hypnos-no-logging-debug-build"
 		}
 	],
 	"settings": {
