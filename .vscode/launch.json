@@ -12,7 +12,7 @@
             "cwd": "${workspaceRoot}",
             //  Application Executable to be flashed before debugging.  Note that the Application ELF image does not contain a valid Image Header,
             //  so we must load the Stub Bootloader zephyr-vector.bin to 0x0 before debugging.
-            "executable": "../hypnos-no-logging-no-optimizations/zephyr.elf",
+            "executable": "../hypnos-no-logging/zephyr.elf",
             "device": "nRF52832",
             //  Arm System View Description, from apache-mynewt-core/hw/mcu/nordic/src/ext/nrfx/mdk
             "svdFile": "nrf52.svd",
